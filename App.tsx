@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { ChatWindow } from './components/ChatWindow';
 import { MODELS } from './constants';
-import { ChatSession, Message, PuterUser } from './types';
+import { ChatSession, Message, PuterUser, ModelOption } from './types';
 
 // Declare Puter global
 declare const puter: any;
@@ -13,13 +13,29 @@ const App: React.FC = () => {
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [user, setUser] = useState<PuterUser | null>(null);
   const [selectedModel, setSelectedModel] = useState<string>(MODELS[0].id);
+  const [availableModels, setAvailableModels] = useState<ModelOption[]>(MODELS);
   const [useWebSearch, setUseWebSearch] = useState<boolean>(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
 
-  // Load user profile and sessions from Puter KV
+  // Load user profile, models, and sessions from Puter KV
   useEffect(() => {
     const init = async () => {
       try {
+        // Fetch models from Puter API
+        try {
+          const fetchedModels = await puter.ai.listModels();
+          if (fetchedModels && Array.isArray(fetchedModels) && fetchedModels.length > 0) {
+            setAvailableModels(fetchedModels);
+            // If currently selected model is not in the new list, select the first one
+            if (!fetchedModels.find((m: any) => m.id === selectedModel)) {
+              setSelectedModel(fetchedModels[0].id);
+            }
+          }
+        } catch (modelErr) {
+          console.error("Failed to fetch models:", modelErr);
+          // Fallback to constants is already handled by initial state
+        }
+
         if (!puter.auth.isSignedIn()) {
           // Just set state, don't force login immediately to show landing
           // but Puter functions will trigger it if called.
@@ -109,6 +125,7 @@ const App: React.FC = () => {
           onUpdateMessages={(msgs) => activeSessionId && updateMessages(activeSessionId, msgs)}
           selectedModel={selectedModel}
           onModelChange={setSelectedModel}
+          availableModels={availableModels}
           useWebSearch={useWebSearch}
           onToggleWebSearch={() => setUseWebSearch(!useWebSearch)}
         />

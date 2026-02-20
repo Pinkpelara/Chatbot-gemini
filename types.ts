@@ -21,7 +21,16 @@ export interface ModelOption {
   id: string;
   name: string;
   provider: string;
-  description: string;
+  description?: string;
+  aliases?: string[];
+  context?: number;
+  max_tokens?: number;
+  cost?: {
+    currency: string;
+    tokens: number;
+    input: number;
+    output: number;
+  };
 }
 
 export interface PuterUser {

@@ -1,13 +1,14 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { MODELS, SYSTEM_INSTRUCTION } from '../constants';
-import { ChatSession, Message } from '../types';
+import { SYSTEM_INSTRUCTION } from '../constants';
+import { ChatSession, Message, ModelOption } from '../types';
 
 interface ChatWindowProps {
   session: ChatSession | null;
   onUpdateMessages: (msgs: Message[]) => void;
   selectedModel: string;
   onModelChange: (modelId: string) => void;
+  availableModels: ModelOption[];
   useWebSearch: boolean;
   onToggleWebSearch: () => void;
 }
@@ -19,6 +20,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   onUpdateMessages,
   selectedModel,
   onModelChange,
+  availableModels,
   useWebSearch,
   onToggleWebSearch
 }) => {
@@ -170,10 +172,10 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
             onChange={(e) => onModelChange(e.target.value)}
             className="text-xs font-medium bg-slate-100 border-none rounded-full px-3 py-1 text-slate-600 focus:ring-2 focus:ring-indigo-500 cursor-pointer outline-none max-w-[150px] md:max-w-none"
           >
-            {Array.from(new Set(MODELS.map(m => m.provider))).map(provider => (
+            {Array.from(new Set(availableModels.map(m => m.provider))).map(provider => (
               <optgroup key={provider} label={provider}>
-                {MODELS.filter(m => m.provider === provider).map(m => (
-                  <option key={m.id} value={m.id}>{m.name}</option>
+                {availableModels.filter(m => m.provider === provider).map(m => (
+                  <option key={m.id} value={m.id}>{m.name || m.id}</option>
                 ))}
               </optgroup>
             ))}
@@ -273,7 +275,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
           </button>
         </form>
         <p className="text-[10px] text-center mt-3 text-slate-400">
-          Powered by Puter.js User-Pays Model. {MODELS.find(m => m.id === selectedModel)?.name} selected.
+          Powered by Puter.js User-Pays Model. {availableModels.find(m => m.id === selectedModel)?.name || selectedModel} selected.
         </p>
       </div>
     </div>
