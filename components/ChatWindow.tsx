@@ -168,9 +168,15 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
           <select 
             value={selectedModel}
             onChange={(e) => onModelChange(e.target.value)}
-            className="text-xs font-medium bg-slate-100 border-none rounded-full px-3 py-1 text-slate-600 focus:ring-2 focus:ring-indigo-500 cursor-pointer outline-none"
+            className="text-xs font-medium bg-slate-100 border-none rounded-full px-3 py-1 text-slate-600 focus:ring-2 focus:ring-indigo-500 cursor-pointer outline-none max-w-[150px] md:max-w-none"
           >
-            {MODELS.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+            {Array.from(new Set(MODELS.map(m => m.provider))).map(provider => (
+              <optgroup key={provider} label={provider}>
+                {MODELS.filter(m => m.provider === provider).map(m => (
+                  <option key={m.id} value={m.id}>{m.name}</option>
+                ))}
+              </optgroup>
+            ))}
           </select>
         </div>
         <div className="flex items-center gap-3">
