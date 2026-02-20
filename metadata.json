@@ -1,0 +1,5 @@
+{
+  "name": "Puter OmniChat",
+  "description": "A comprehensive all-in-one AI chatbot platform leveraging Puter.js to provide access to GPT-5, Claude 3.7, Gemini 3, and 500+ other models with web search, file memory, and image analysis capabilities.",
+  "requestFramePermissions": []
+}
